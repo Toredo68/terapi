@@ -2,12 +2,12 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Farmakoterapi Vaka Simülasyonu</title>
+  <title>Farmakoterapi 30 Soruluk Vaka Maratonu</title>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0b1329; color: #f8fafc; padding: 20px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: #1e293b; border-radius: 16px; padding: 28px; width: 100%; max-width: 720px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card { background: #1e293b; border-radius: 16px; padding: 28px; width: 100%; max-width: 760px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     h2, h3 { margin-top: 0; color: #38bdf8; text-align: center; }
     input { width: 100%; padding: 14px; background: #0f172a; border: 2px solid #334155; color: #fff; border-radius: 10px; font-size: 16px; margin-bottom: 16px; outline: none; }
     input:focus { border-color: #38bdf8; }
@@ -25,6 +25,7 @@
     .cat-diyabet { background: #2563eb; color: #dbeafe; }
     .cat-hipertansiyon { background: #dc2626; color: #fee2e2; }
     .cat-diuretik { background: #059669; color: #d1fae5; }
+    .cat-vaka { background: #d97706; color: #fef3c7; }
     .flashcard { background: #1e3a8a; border-left: 4px solid #38bdf8; padding: 16px; border-radius: 8px; font-size: 15px; color: #e0e7ff; margin-bottom: 15px; line-height: 1.5; }
   </style>
 </head>
@@ -32,8 +33,8 @@
 
   <!-- GİRİŞ EKRANI -->
   <div id="login-card" class="card">
-    <h2>Klinik Eczacılık Sınav Simülatörü</h2>
-    <p style="text-align: center; color: #94a3b8; font-size: 14px;">Şifreler, Kodlamalar ve Vaka Analizleri</p>
+    <h2>Klinik Eczacılık Maratonu</h2>
+    <p style="text-align: center; color: #94a3b8; font-size: 14px;">30 Soru: Vaka Analizleri, Şifreler ve Klinik Yorumlar</p>
     <input type="text" id="my-name" placeholder="Eczacı Adınızı Yazın..." maxlength="15">
     <button class="btn" onclick="enterGame()">Lobiye Katıl</button>
   </div>
@@ -41,14 +42,14 @@
   <!-- BEKLEME LOBİSİ -->
   <div id="lobby-card" class="card" style="display: none;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-      <h3 style="margin:0;">Vaka Odası</h3>
+      <h3 style="margin:0;">Sınav Odası</h3>
       <span class="badge" id="player-count">0 Oyuncu</span>
     </div>
     <p style="color: #94a3b8; font-size: 14px;">Katılanlar:</p>
     <div id="lobby-players" style="min-height: 80px; margin-bottom: 20px;"></div>
     
     <div id="host-actions" style="display: none;">
-      <button class="btn" style="background:#10b981;" onclick="startQuiz()">Vakaları Başlat</button>
+      <button class="btn" style="background:#10b981;" onclick="startQuiz()">Maratonu Başlat</button>
     </div>
     <p id="wait-msg" style="text-align:center; color:#94a3b8; font-size: 14px;">Oda kurucusunun başlatması bekleniyor...</p>
   </div>
@@ -57,7 +58,7 @@
   <div id="quiz-card" class="card" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <div>
-        <span class="badge" id="q-counter">Soru 1/5</span>
+        <span class="badge" id="q-counter">Soru 1/30</span>
         <span id="q-cat" class="cat-badge">Kategori</span>
       </div>
       <span class="badge" id="time-text" style="color: #f59e0b;">30s</span>
@@ -76,7 +77,7 @@
   <!-- BİLGİ KARTI VE SKOR EKRANI -->
   <div id="round-card" class="card" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 id="round-result-title" style="margin:0;">Vaka Çözümü</h3>
+      <h3 id="round-result-title" style="margin:0;">Çözüm & Şifre</h3>
       <span class="badge" style="color: #38bdf8;">Sıradaki Vaka (12s)...</span>
     </div>
     <p id="round-correct-ans" style="text-align:center; color:#4ade80; font-weight:600; font-size: 17px; margin: 15px 0;"></p>
@@ -88,44 +89,48 @@
   </div>
 
 <script>
-const ROOM_NAME = "farma-klinik-vaka-sim-01";
+const ROOM_NAME = "farma-klinik-vaka-sim-30";
 
 const questions = [
-  { 
-    q: "65 yaşında kalp yetmezliği (NYHA Sınıf 3) olan Tip 2 diyabet hastasında aşağıdaki DPP-4 inhibitörlerinden hangisi KESİNLİKLE kontrendikedir?", 
-    options: ["Linagliptin", "Saksagliptin", "Sitagliptin", "Vildagliptin"], 
-    answer: 1, 
-    tag: "Diyabet",
-    explanation: "Şifre: A-S (Alogliptin ve Saksagliptin kalbi asar). Bu iki gliptin kalp yetmezliği semptomlarını kötüleştirdiği için kalp yetmezliğinde kontrendikedir."
-  },
-  { 
-    q: "eGFR değeri 28 mL/dk (İleri Evre KBY) olan bir hastada renal doz ayarı gerektirmeksizin güvenle başlanabilecek tek DPP-4 inhibitörü hangisidir?", 
-    options: ["Vildagliptin", "Alogliptin", "Sitagliptin", "Linagliptin"], 
-    answer: 3, 
-    tag: "Diyabet",
-    explanation: "Şifre: Lina = Güvenli Liman. Linagliptin karaciğer/safra yoluyla atılır. Böbrekten atılmayan ve böbrek yetmezliğinde doz ayarı gerektirmeyen tek gliptindir."
-  },
-  { 
-    q: "Hipertansiyon ve osteoporozu olan bir hastada, idrarda kalsiyum atılımını azaltarak (hipokalsiüri) kemik erimesine karşı ikili yarar sağlayan diüretik grubu hangisidir?", 
-    options: ["Loop (Kıvrım) Diüretikleri", "Tiazid Diüretikleri", "Potasyum Tutucu Diüretikler", "Ozmotik Diüretikler"], 
-    answer: 1, 
-    tag: "Hipertansiyon",
-    explanation: "Zıtlık Kuralı: Tiazidler kalsiyumu TUTAR (kanda artırır, idrarda azaltır), Loop diüretikleri ise ATAR (hipokalsemi yapar). Osteoporozda Tiazid ilk tercihtir."
-  },
-  { 
-    q: "Furosemid (Loop diüretiği) kullanan bir hastada şiddetli kulak çınlaması (ototoksisite) başlamıştır. Hastanın reçetesindeki hangi ilaç bu yan etkiyi tetiklemiş olabilir?", 
-    options: ["Aspirin", "Parasetamol", "Metformin", "Klopidogrel"], 
-    answer: 0, 
-    tag: "Diüretikler",
-    explanation: "Şifre: CALM EAR. Cisplatin, Aminoglikozit, Loop diüretikleri, Malarya ilacı, Eritromisin, Aspirin ve Red Man (Vankomisin) ototoksiktir. Furosemid + Aspirin kulak çınlaması yapar."
-  },
-  { 
-    q: "Morbid obezitesi olan Tip 2 diyabet hastasında kilo vermesi hedeflenmektedir. Bu hastada kilo artışına sebep olacağı için BAŞLANMAMASI gereken ilaç grubu hangisidir?", 
-    options: ["SGLT2 İnhibitörleri", "GLP-1 Agonistleri", "Sülfonilüreler", "Biguanidler"], 
-    answer: 2, 
-    tag: "Diyabet",
-    explanation: "Şifre: SİMİT. Sülfonilüre, Meglitinid ve Tiazolidindion grupları kilo aldırır. Bu hastada kilo verdiren GLP-1 agonisti veya Metformin tercih edilmelidir."
-  }
+  // 1-5 (Önceki Sorular)
+  { q: "65 yaşında kalp yetmezliği (NYHA Sınıf 3) olan Tip 2 diyabet hastasında aşağıdaki DPP-4 inhibitörlerinden hangisi KESİNLİKLE kontrendikedir?", options: ["Linagliptin", "Saksagliptin", "Sitagliptin", "Vildagliptin"], answer: 1, tag: "Diyabet", explanation: "Şifre: A-S (Alogliptin ve Saksagliptin kalbi asar). Bu iki gliptin kalp yetmezliği semptomlarını kötüleştirdiği için kalp yetmezliğinde kontrendikedir." },
+  { q: "eGFR değeri 28 mL/dk (İleri Evre KBY) olan bir hastada renal doz ayarı gerektirmeksizin güvenle başlanabilecek tek DPP-4 inhibitörü hangisidir?", options: ["Vildagliptin", "Alogliptin", "Sitagliptin", "Linagliptin"], answer: 3, tag: "Diyabet", explanation: "Şifre: Lina = Güvenli Liman. Linagliptin karaciğer/safra yoluyla atılır. Böbrekten atılmayan ve böbrek yetmezliğinde doz ayarı gerektirmeyen tek gliptindir." },
+  { q: "Hipertansiyon ve osteoporozu olan bir hastada, idrarda kalsiyum atılımını azaltarak (hipokalsiüri) kemik erimesine karşı ikili yarar sağlayan diüretik grubu hangisidir?", options: ["Loop (Kıvrım) Diüretikleri", "Tiazid Diüretikleri", "Potasyum Tutucu Diüretikler", "Ozmotik Diüretikler"], answer: 1, tag: "Diüretik", explanation: "Zıtlık Kuralı: Tiazidler kalsiyumu TUTAR (kanda artırır, idrarda azaltır), Loop diüretikleri ise ATAR (hipokalsemi yapar). Osteoporozda Tiazid ilk tercihtir." },
+  { q: "Furosemid (Loop diüretiği) kullanan bir hastada şiddetli kulak çınlaması (ototoksisite) başlamıştır. Hastanın reçetesindeki hangi ilaç bu yan etkiyi tetiklemiş olabilir?", options: ["Aspirin", "Parasetamol", "Metformin", "Klopidogrel"], answer: 0, tag: "Diüretik", explanation: "Şifre: CALM EAR. Cisplatin, Aminoglikozit, Loop diüretikleri, Malarya ilacı, Eritromisin, Aspirin ve Red Man (Vankomisin) ototoksiktir. Furosemid + Aspirin kulak çınlaması yapar." },
+  { q: "Morbid obezitesi olan Tip 2 diyabet hastasında kilo vermesi hedeflenmektedir. Bu hastada kilo artışına sebep olacağı için BAŞLANMAMASI gereken ilaç grubu hangisidir?", options: ["SGLT2 İnhibitörleri", "GLP-1 Agonistleri", "Sülfonilüreler", "Biguanidler"], answer: 2, tag: "Diyabet", explanation: "Şifre: SİMİT. Sülfonilüre, Meglitinid ve Tiazolidindion grupları kilo aldırır. Bu hastada kilo verdiren GLP-1 agonisti veya Metformin tercih edilmelidir." },
+  
+  // VAKA GÖRSELİNDEN SORULAR (6-7)
+  { q: "62 yaşında N.K., Tip 2 diyabet, hipertansiyon ve morbid obezite tanılıdır. İdrar tahlilinde mikroalbüminüri (++) görülmüştür. Bu hastada protein kaçağını (nefropatiyi) engellemek için mevcut tedavisine hangi ajan eklenmelidir?", options: ["Sülfonilüre (Örn: Glipizid)", "SGLT2 İnhibitörü (Örn: Empagliflozin)", "Alfa Glikozidaz İnhibitörü (Örn: Akarboz)", "Tiazolidindion (Örn: Pioglitazon)"], answer: 1, tag: "Vaka", explanation: "Vaka Analizi: Hastada mikroalbüminüri (Nefropati) var. Hem proteinüriyi azaltmak hem de kilo kaybı (obezite) sağlamak için SGLT2 inhibitörleri (Gliflozinler) en ideal seçenektir." },
+  { q: "Aynı morbid obez hastanın mevcut ilaçları arasında Glipizid 5 mg bulunmaktadır. Hasta son birkaç ayda 8 kg aldığını belirtmektedir. Bu durumda Eczacının yaklaşımı ne olmalıdır?", options: ["Glipizid dozu artırılmalıdır.", "Glipizid kesilmeli, kilo verdiren bir ajana (Örn: GLP-1 agonisti) geçilmelidir.", "Glipizid yanına İnsülin eklenmelidir.", "Hastaya diyet yapması söylenip Glipizid'e devam edilmelidir."], answer: 1, tag: "Vaka", explanation: "Vaka Analizi: Glipizid bir sülfonilüredir ve 'SİMİT' şifresine göre kilo aldırır. Hasta zaten morbid obez ve 8 kg almış. İlaç derhal kesilip GLP-1 agonisti veya SGLT2 başlanmalıdır." },
+
+  // DİYABET ŞİFRELERİ (8-15)
+  { q: "Gebelikte (Gestasyonel Diyabet) aşağıdaki insülinlerden hangisinin kullanılması KONTRENDİKEDİR?", options: ["İnsülin Aspart", "İnsülin Detemir", "İnsülin Glarjin", "NPH İnsülin"], answer: 2, tag: "Diyabet", explanation: "Şifre: 'G' ile başlayan insülinler (Glarjin, Glulisin) ve ultra uzun etkililer gebelikte verilmez. Aspart, Lispro, Detemir ve NPH güvenlidir." },
+  { q: "Ailesinde Medüller Tiroid Kanseri öyküsü olan bir Tip 2 diyabet hastasında aşağıdaki ilaç gruplarından hangisi kesinlikle KONTRENDİKEDİR?", options: ["GLP-1 Reseptör Agonistleri", "DPP-4 İnhibitörleri", "SGLT2 İnhibitörleri", "Biguanidler"], answer: 0, tag: "Diyabet", explanation: "Kanser Eşleştirmesi: GLP-1 = Tiroid Kanseri. DPP-4 = Pankreas Kanseri. Pioglitazon/SGLT2 = Mesane Kanseri." },
+  { q: "Ailesinde Mesane Kanseri öyküsü olan ve idrarında kan (hematüri) görülen hastada aşağıdaki ilaçlardan hangisi derhal kesilmelidir?", options: ["Metformin", "Pioglitazon", "Sitagliptin", "Akarboz"], answer: 1, tag: "Diyabet", explanation: "Kanser Eşleştirmesi: Pioglitazon (Tiazolidindion) mesane kanseri riskini artırır. Aile öyküsü varsa kontrendikedir." },
+  { q: "İyotlu kontrast madde (İohexol) kullanılarak tomografi çekilecek bir diyabet hastasında Metformin tedavisi nasıl yönetilmelidir?", options: ["İşlem günü doz iki katına çıkarılır.", "İşlemden 48 saat önce Metformin kesilir.", "İşlem sonrası bol şekerli su içirilir.", "Metformin yerine geçici olarak Sülfonilüre başlanır."], answer: 1, tag: "Diyabet", explanation: "Metformin ve kontrast madde birlikte böbrek hasarı ve laktik asidoz yapabilir. Bu nedenle kontrastlı işlemden 48 saat önce Metformin kesilmelidir." },
+  { q: "Akarboz ve İnsülin kullanan bir hastada titreme ve terleme ile seyreden hipoglisemi gelişmiştir. Bu hastanın hipoglisemisi aşağıdakilerden hangisi ile tedavi edilmelidir?", options: ["Çay şekeri (Sükroz)", "Saf glikoz (Dekstroz)", "Sütlü çikolata", "Meyve suyu"], answer: 1, tag: "Diyabet", explanation: "Klinik Püf Nokta: Akarboz (Alfa glikozidaz inhibitörü) disakkaritlerin (çay şekeri) bağırsakta monosakkaritlere parçalanmasını engeller. Bu yüzden hipoglisemi sadece saf glikozla çözülebilir." },
+  { q: "Gece 23:00'te uygulanan insülin dozunun FAZLA gelmesi nedeniyle hastanın gece 03:00'te hipoglisemiye girip, sabah kalktığında reaktif olarak hiperglisemi yaşamasına ne ad verilir?", options: ["Dawn (Şafak) Fenomeni", "Somogyi Fenomeni", "İnsülin Direnci", "Balayı Fazı"], answer: 1, tag: "Diyabet", explanation: "Somogyi Fenomeni: Doz FAZLA gelmiştir, gece hipo -> sabah hiper görülür (Doz azaltılır). Dawn (Şafak) Fenomeninde ise doz YETERSİZDİR, gece ve sabah hep hiper görülür (Doz artırılır)." },
+  { q: "Aşağıdaki diyabet tanısı kriterlerinden hangisi YANLIŞTIR?", options: ["Açlık Kan Şekeri (AKŞ) ≥ 126 mg/dL", "Oral Glikoz Tolerans Testi (OGTT) 2. Saat ≥ 200 mg/dL", "Açlık Kan Şekeri (AKŞ) ≥ 110 mg/dL", "Hemoglobin A1c (HbA1c) ≥ %6.5"], answer: 2, tag: "Diyabet", explanation: "AKŞ 100-125 arası 'Prediyabet'tir. Diyabet tanısı için AKŞ'nin en az 126 mg/dL olması gerekir." },
+  { q: "Tip 2 diyabet hastasında eGFR (Glomerüler Filtrasyon Hızı) değerinin 30 mL/dk altına düşmesi (Şiddetli KBY) durumunda KESİNLİKLE kontrendike olan ilk basamak ilacı hangisidir?", options: ["Linagliptin", "Metformin", "Repaglinid", "İnsülin Glarjin"], answer: 1, tag: "Diyabet", explanation: "Laktik asidoz riski nedeniyle eGFR < 30 mL/dk olduğunda Metformin KESİNLİKLE kontrendikedir ve derhal kesilmelidir." },
+
+  // HİPERTANSİYON VE DİÜRETİK ŞİFRELERİ (16-25)
+  { q: "Gebelikte hipertansiyon tedavisinde kullanılması güvenli olan 'HMLN' şifresine DAHİL OLMAYAN (Kontrendike olan) ajan hangisidir?", options: ["Metildopa", "Nifedipin", "Labetalol", "Lisinopril"], answer: 3, tag: "Hipertansiyon", explanation: "Şifre: HMLN (Hidralazin, Metildopa, Labetalol, Nifedipin) gebelikte güvenlidir. Lisinopril bir ACE inhibitörüdür ve gebelikte kesinlikle kontrendikedir." },
+  { q: "Prostat hiperplazisi (BPH) ve hipertansiyonu olan hastaya ikili yarardan dolayı Doksazosin (Alfa blokör) başlanmıştır. Eczacı ilacı verirken hastayı hangi yan etki konusunda ÖZELLİKLE uyarmalıdır?", options: ["Sabah aç karnına almalısınız.", "İlk dozu gece yatmadan önce almalısınız, aksi halde bayılabilirsiniz.", "İdrar renginiz maviye dönebilir.", "Potasyumdan zengin gıdalar tüketmelisiniz."], answer: 1, tag: "Hipertansiyon", explanation: "Klinik Kural: Alfa blokörler (Doksazosin, Terazosin) şiddetli ortostatik hipotansiyona ('İlk Doz Senkobu') neden olur. Düşüp kalça kırmamak için ilk doz gece yatmadan önce alınmalıdır." },
+  { q: "Aldosteron/Renin oranının çok yüksek olduğu Primer Hiperaldosteronizm (Conn Sendromu) hastasında, bilateral hiperplazi varlığında medikal tedavi olarak hangisi başlanır?", options: ["Spironolakton", "Furosemid", "Amlodipin", "Hidroklorotiazid"], answer: 0, tag: "Hipertansiyon", explanation: "Conn Sendromunda aldosteron aşırı yüksektir. Tedavide aldosteron antagonisti (MRA) olan Spironolakton veya Eplerenon verilir." },
+  { q: "MRA grubu potasyum tutucu diüretik kullanan bir erkek hastada 'Jinekomasti' (meme büyümesi) şikayeti başlamıştır. Bu yan etkiye sebep olan etken madde hangisidir?", options: ["Eplerenon", "Amilorid", "Spironolakton", "Triamteren"], answer: 2, tag: "Diüretik", explanation: "Şifre: Spir = Spiral meme (Jinekomasti) yapar. Eplerenon ise 'Epi/Temiz'dir, jinekomasti yapmaz." },
+  { q: "Potasyum tutucu diüretiklerden hangisinin nefrotoksisitesi YOKTUR ve günde tek doz kullanım kolaylığı sağlar?", options: ["Triamteren", "Amilorid", "Spironolakton", "Eplerenon"], answer: 1, tag: "Diüretik", explanation: "Şifre: Amilorid = Adil/Masumdur, nefrotoksisitesi yoktur. Triamteren = Toksiktir (nefrotoksik)." },
+  { q: "Acil servise başvuran hipertansiyon hastasının kan basıncı 190/120 mmHg'dir. Göz muayenesinde papilödem ve tahlillerinde Akut Böbrek Hasarı (ABH) saptanmıştır. Teşhis nedir?", options: ["Hipertansif Aciliyet (Urgency)", "İzole Sistolik Hipertansiyon", "Hipertansif Acil (Emergency)", "Dirençli Hipertansiyon"], answer: 2, tag: "Hipertansiyon", explanation: "Acil (Emergency) ile Aciliyet (Urgency) arasındaki TEK fark 'Son Organ Hasarı'dır. Papilödem ve ABH birer son organ hasarı olduğu için teşhis Hipertansif Acildir." },
+  { q: "Tiazid ve Loop (Kıvrım) diüretiklerinin her ikisi de idrarla hangi elektroliti aşırı atarak hastayı aritmi riskine sokar ve bu yüzden Potasyum Tutucularla kombine edilir?", options: ["Hiponatremi", "Hipomagnezemi", "Hipokalemi", "Hiperkalsemi"], answer: 2, tag: "Diüretik", explanation: "Tiazid ve Loop diüretiklerinin ortak ve en sık görülen yan etkisi Hipokalemi'dir (Potasyum düşüklüğü). Bunu önlemek için Spironolakton gibi potasyum tutucularla kombine edilirler." },
+  { q: "Feokromositoma tanısı alan (katekolaminleri aşırı yüksek) bir hipertansiyon hastasında tedaviye HANGİ İLAÇ GRUBU İLE başlanması zorunludur?", options: ["Beta Blokörler", "ACE İnhibitörleri", "Alfa Blokörler", "Kalsiyum Kanal Blokörleri"], answer: 2, tag: "Hipertansiyon", explanation: "Klinik Sıralama: Feokromositomada ÖNCE Alfa Blokörler başlanır. Eğer önce Beta Blokör başlanırsa ölümcül Rebound Hipertansiyon (ani tansiyon fırlaması) gelişir." },
+  { q: "2025 yılı güncel kılavuzlarına göre, 10 yıllık kardiyovasküler riski hesaplamada kullanılan PREVENT denkleminin eski PCE denklemine göre en büyük üstünlüğü nedir?", options: ["Sadece 65 yaş üzerinde kullanılması", "Irk değişkenini kaldırması ve Kalp Yetmezliğini de hesaplamaya dahil etmesi", "Sadece Tip 1 diyabetlilere özel olması", "Göz muayenesi sonuçlarına dayanması"], answer: 1, tag: "Hipertansiyon", explanation: "PREVENT 2025 Denklemi: Irk ayrımını (siyahi vb.) kaldırmıştır, böbrek fonksiyonlarını dahil etmiştir ve kalp yetmezliğini de bir risk/sonlanım olarak hesaplar." },
+  { q: "Hipertansiyon ve taşikardisi olan bir hastada, hem kalp hızını düşüren hem de Nitrik Oksit (NO) salınımı yaparak damarları genişleten (vazodilatasyon) en ideal Beta Blokör hangisidir?", options: ["Propranolol", "Metoprolol", "Bisoprolol", "Nebivolol"], answer: 3, tag: "Hipertansiyon", explanation: "Nebivolol, beta-1 selektif etkisinin yanında Nitrik Oksit (NO) üzerinden vazodilatasyon yaparak tansiyonu çok daha iyi düşüren özel bir beta blokördür." },
+
+  // İLERİ KLİNİK VAKALAR & ETKİLEŞİMLER (26-30)
+  { q: "Karaciğer yetmezliği (Siroz) olan bir hastada postprandiyal (tokluk) kan şekerini düşürmek için sülfonilüre kontrendikedir. Meglitinid grubundan böbrekten en az atılan ve en GÜVENLİ olan ajan hangisidir?", options: ["Nateglinid", "Repaglinid", "Glimepirid", "Gliklazid"], answer: 1, tag: "Vaka", explanation: "Karaciğer ve böbrek yetmezliğinde meglitinidlerden 'Repaglinid' çok daha güvenlidir çünkü böbrekten atılımı çok düşüktür. Nateglinid'in aktif metabolitleri böbrekte birikebilir." },
+  { q: "Atorvastatin (CYP3A4 substratı) kullanan bir hastaya pnömoni tedavisi için Klaritromisin (güçlü CYP3A4 inhibitörü) başlanmıştır. Bu etkileşimin klinik sonucu ne olur?", options: ["Atorvastatin'in kan düzeyi artar ve Miyopati/Rabdomiyoliz riski oluşur.", "Atorvastatin inaktif hale gelir ve kolesterol fırlar.", "Klaritromisin emilemez ve enfeksiyon ilerler.", "İlaçlar midede çökelti oluşturur."], answer: 0, tag: "Vaka", explanation: "Etkileşim: Klaritromisin karaciğerdeki CYP3A4 enzimini kilitler. Atorvastatin metabolize olamaz, kanda birikir ve kas yıkımına (Rabdomiyoliz) neden olur." },
+  { q: "Diyabetik Ketoasidoz (DKA) tanısıyla yoğun bakıma alınan hastada, kan şekeri IV İnsülin ve sıvı desteği ile 250 mg/dL'nin altına düşürülmüştür. Hipoglisemiyi önlemek için bir sonraki adım ne olmalıdır?", options: ["İnsülin tamamen kesilmelidir.", "Dekstroz + İnsülin infüzyonuna geçilmelidir.", "Sülfonilüre hapına geçilmelidir.", "Sadece SF (%0.9 NaCl) ile izleme devam edilmelidir."], answer: 1, tag: "Vaka", explanation: "DKA Tedavi Protokolü: Şeker 250'nin altına indiğinde insülin hemen kesilmez (asidoz sürüyordur). Hastayı hipoglisemiden korumak için tedaviye Dekstroz (şeker) eklenerek 'Dekstroz + İnsülin' birlikte verilir." },
+  { q: "SGLT2 İnhibitörü (Örn: Empagliflozin) kullanan bir hastada yüksek ateş, halsizlik ve genital/perineal bölgede eritemli, şiş ve aşırı ağrılı bir apse oluşmuştur. Bu acil tablonun adı nedir?", options: ["Diyabetik Ayak İnfeksiyonu", "Akut Pankreatit", "Fournier Gangreni", "Laktik Asidoz"], answer: 2, tag: "Vaka", explanation: "Fournier Gangreni: SGLT2 inhibitörlerine bağlı olarak idrarda şekerin artmasıyla gelişen, genital bölgede hızla ilerleyen nekrotizan fasiit (apse/kangren) tablosudur. İlaç derhal kesilir." },
+  { q: "Bir hasta HbA1c değeri %9.5 olarak kliniğe gelmiştir. Yapılan tahlillerde C-peptid değeri 0.3 ng/mL (Normalde >2 olmalı) olarak bulunmuştur. Bu hastada BAŞLANMASI ZORUNLU olan tedavi nedir?", options: ["Sadece Metformin başlanıp 3 ay beklenmesi", "Yaşam tarzı değişikliği ve Akarboz", "Sülfonilüre + DPP-4 İnhibitörü", "Bazal + Bolus İnsülin Tedavisi"], answer: 3, tag: "Vaka", explanation: "Klinik Yorum: C-Peptid'in 0.5'in altında olması pankreastaki insülin rezervinin TAMAMEN BİTTİĞİNİ gösterir (Tip 1 DM veya İleri Tip 2 DM). Dışarıdan insülin (Bazal+Bolus) vermek zorunludur." }
 ];
 
 // Şıkları karıştırma ve doğru cevabın yeni indeksini bulma
@@ -137,6 +142,12 @@ questions.forEach(qObj => {
   }
   qObj.answer = qObj.options.indexOf(correctText);
 });
+
+// Soruları genel olarak rastgele harmanlama
+for (let i = questions.length - 1; i > 0; i--) {
+  const j = Math.floor(Math.random() * (i + 1));
+  [questions[i], questions[j]] = [questions[j], questions[i]];
+}
 
 let peer = null;
 let isHost = false;
@@ -217,7 +228,7 @@ function broadcast(msg) {
 }
 
 function renderLobby() {
-  document.getElementById('player-count').innerText = `${players.length} Oyuncu`;
+  document.getElementById('player-count').innerText = `${players.length} Eczacı`;
   document.getElementById('lobby-players').innerHTML = players.map(p => `<span class="player-chip">👤 ${p.name}</span>`).join('');
 }
 
@@ -331,7 +342,7 @@ let selectedChoice = null;
 
 function handleClientData(data) {
   if (data.type === 'LOBBY_UPDATE') {
-    document.getElementById('player-count').innerText = `${data.players.length} Oyuncu`;
+    document.getElementById('player-count').innerText = `${data.players.length} Eczacı`;
     document.getElementById('lobby-players').innerHTML = data.players.map(p => `<span class="player-chip">👤 ${p.name}</span>`).join('');
   } else if (data.type === 'START') {
     document.getElementById('lobby-card').style.display = 'none';
@@ -341,12 +352,13 @@ function handleClientData(data) {
     document.getElementById('round-card').style.display = 'none';
     document.getElementById('quiz-card').style.display = 'block';
 
-    document.getElementById('q-counter').innerText = `Vaka ${data.index + 1}/${data.total}`;
+    document.getElementById('q-counter').innerText = `Soru ${data.index + 1}/${data.total}`;
     
     const tagElem = document.getElementById('q-cat');
     tagElem.innerText = data.tag;
     if (data.tag === 'Diyabet') tagElem.className = 'cat-badge cat-diyabet';
     else if (data.tag === 'Hipertansiyon') tagElem.className = 'cat-badge cat-hipertansiyon';
+    else if (data.tag === 'Vaka') tagElem.className = 'cat-badge cat-vaka';
     else tagElem.className = 'cat-badge cat-diuretik';
 
     document.getElementById('question-text').innerText = data.q;
@@ -370,7 +382,7 @@ function handleClientData(data) {
     document.getElementById('round-card').style.display = 'block';
 
     document.getElementById('round-correct-ans').innerText = `Doğru Cevap: ${data.correctAnswer}`;
-    document.getElementById('flashcard-box').innerHTML = `<strong>💡 Hafıza Kartı:</strong> ${data.explanation}`;
+    document.getElementById('flashcard-box').innerHTML = `<strong>💡 Klinik Şifre:</strong> ${data.explanation}`;
     
     const lb = document.getElementById('leaderboard');
     lb.innerHTML = data.leaderboard.map((p, i) => {
@@ -385,7 +397,7 @@ function handleClientData(data) {
   } else if (data.type === 'GAME_OVER') {
     document.getElementById('quiz-card').style.display = 'none';
     document.getElementById('round-card').style.display = 'block';
-    document.getElementById('round-result-title').innerText = "🏆 Tüm Vakalar Tamamlandı! 🏆";
+    document.getElementById('round-result-title').innerText = "🏆 Maraton Tamamlandı! 🏆";
     document.getElementById('round-correct-ans').innerText = "Simülasyon sona erdi.";
     document.getElementById('flashcard-box').style.display = 'none';
   }
@@ -397,7 +409,7 @@ function submitAnswer(idx, btnElem) {
 
   btnElem.classList.add('selected');
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-  document.getElementById('status-footer').innerText = "Cevabınız iletildi! Diğer eczacılar bekleniyor...";
+  document.getElementById('status-footer').innerText = "Cevabınız iletildi! Diğerleri bekleniyor...";
 
   const payload = { type: 'SUBMIT_ANSWER', choice: idx };
   if (isHost) {
