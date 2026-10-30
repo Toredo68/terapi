@@ -2,12 +2,12 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>AGS Tarih - 50 Soru</title>
+  <title>Farmakoterapi Vaka Simülasyonu</title>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <style>
     * { box-sizing: border-box; }
     body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0b1329; color: #f8fafc; padding: 20px; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-    .card { background: #1e293b; border-radius: 16px; padding: 28px; width: 100%; max-width: 650px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card { background: #1e293b; border-radius: 16px; padding: 28px; width: 100%; max-width: 720px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
     h2, h3 { margin-top: 0; color: #38bdf8; text-align: center; }
     input { width: 100%; padding: 14px; background: #0f172a; border: 2px solid #334155; color: #fff; border-radius: 10px; font-size: 16px; margin-bottom: 16px; outline: none; }
     input:focus { border-color: #38bdf8; }
@@ -15,44 +15,52 @@
     .btn:hover { background: #1d4ed8; }
     .timer-container { width: 100%; background: #334155; border-radius: 8px; height: 12px; margin: 15px 0; overflow: hidden; }
     .timer-bar { height: 100%; width: 100%; background: #38bdf8; transition: width 0.9s linear; }
-    .option-btn { width: 100%; text-align: left; background: #334155; color: #f8fafc; border: 2px solid #475569; padding: 14px; border-radius: 10px; margin: 10px 0; font-size: 15px; cursor: pointer; transition: 0.2s; }
+    .option-btn { width: 100%; text-align: left; background: #334155; color: #f8fafc; border: 2px solid #475569; padding: 14px; border-radius: 10px; margin: 10px 0; font-size: 15px; cursor: pointer; transition: 0.2s; line-height: 1.4; }
     .option-btn:hover:not(:disabled) { background: #475569; border-color: #94a3b8; }
     .option-btn.selected { border-color: #38bdf8; background: #1e3a8a; }
     .badge { background: #0f172a; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; color: #94a3b8; border: 1px solid #334155; }
     .player-chip { background: #0f172a; border: 1px solid #334155; padding: 8px 14px; border-radius: 20px; margin: 4px; display: inline-block; font-size: 14px; }
-    .leaderboard-row { display: flex; justify-content: space-between; padding: 12px; background: #0f172a; border-radius: 8px; margin-bottom: 8px; font-weight: 600; }
+    .leaderboard-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: #0f172a; border-radius: 8px; margin-bottom: 8px; font-weight: 600; }
+    .cat-badge { font-size: 12px; padding: 4px 8px; border-radius: 6px; font-weight: bold; margin-left: 6px; }
+    .cat-diyabet { background: #2563eb; color: #dbeafe; }
+    .cat-hipertansiyon { background: #dc2626; color: #fee2e2; }
+    .cat-diuretik { background: #059669; color: #d1fae5; }
+    .flashcard { background: #1e3a8a; border-left: 4px solid #38bdf8; padding: 16px; border-radius: 8px; font-size: 15px; color: #e0e7ff; margin-bottom: 15px; line-height: 1.5; }
   </style>
 </head>
 <body>
 
   <!-- GİRİŞ EKRANI -->
   <div id="login-card" class="card">
-    <h2>AGS Tarih Yarışması</h2>
-    <p style="text-align: center; color: #94a3b8; font-size: 14px;">50 Soru - 20 Saniye - Hızlı Bilen Kazanır!</p>
-    <input type="text" id="my-name" placeholder="Yarışmacı Adınızı Yazın..." maxlength="15">
+    <h2>Klinik Eczacılık Sınav Simülatörü</h2>
+    <p style="text-align: center; color: #94a3b8; font-size: 14px;">Şifreler, Kodlamalar ve Vaka Analizleri</p>
+    <input type="text" id="my-name" placeholder="Eczacı Adınızı Yazın..." maxlength="15">
     <button class="btn" onclick="enterGame()">Lobiye Katıl</button>
   </div>
 
   <!-- BEKLEME LOBİSİ -->
   <div id="lobby-card" class="card" style="display: none;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-      <h3 style="margin:0;">Yarışma Odası</h3>
+      <h3 style="margin:0;">Vaka Odası</h3>
       <span class="badge" id="player-count">0 Oyuncu</span>
     </div>
-    <p style="color: #94a3b8; font-size: 14px;">Katılan oyuncular:</p>
+    <p style="color: #94a3b8; font-size: 14px;">Katılanlar:</p>
     <div id="lobby-players" style="min-height: 80px; margin-bottom: 20px;"></div>
     
     <div id="host-actions" style="display: none;">
-      <button class="btn" style="background:#10b981;" onclick="startQuiz()">Yarışmayı Başlat</button>
+      <button class="btn" style="background:#10b981;" onclick="startQuiz()">Vakaları Başlat</button>
     </div>
-    <p id="wait-msg" style="text-align:center; color:#94a3b8; font-size: 14px;">Oda kurucusunun oyunu başlatması bekleniyor...</p>
+    <p id="wait-msg" style="text-align:center; color:#94a3b8; font-size: 14px;">Oda kurucusunun başlatması bekleniyor...</p>
   </div>
 
   <!-- SORU EKRANI -->
   <div id="quiz-card" class="card" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <span class="badge" id="q-counter">Soru 1/50</span>
-      <span class="badge" id="time-text" style="color: #f59e0b;">20s</span>
+      <div>
+        <span class="badge" id="q-counter">Soru 1/5</span>
+        <span id="q-cat" class="cat-badge">Kategori</span>
+      </div>
+      <span class="badge" id="time-text" style="color: #f59e0b;">30s</span>
     </div>
 
     <div class="timer-container">
@@ -65,82 +73,70 @@
     <div id="status-footer" style="text-align: center; margin-top: 15px; font-size: 14px; color: #94a3b8; min-height: 22px;"></div>
   </div>
 
-  <!-- 2 SANİYELİK SKOR EKRANI -->
+  <!-- BİLGİ KARTI VE SKOR EKRANI -->
   <div id="round-card" class="card" style="display: none;">
     <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h3 id="round-result-title" style="margin:0;">Tur Bitti</h3>
-      <span class="badge" style="color: #38bdf8;">Sonraki soruya geçiliyor...</span>
+      <h3 id="round-result-title" style="margin:0;">Vaka Çözümü</h3>
+      <span class="badge" style="color: #38bdf8;">Sıradaki Vaka (12s)...</span>
     </div>
     <p id="round-correct-ans" style="text-align:center; color:#4ade80; font-weight:600; font-size: 17px; margin: 15px 0;"></p>
+    
+    <!-- ÖĞRETİCİ BİLGİ KARTI -->
+    <div id="flashcard-box" class="flashcard"></div>
+
     <div id="leaderboard" style="margin: 15px 0;"></div>
   </div>
 
 <script>
-const ROOM_NAME = "ags-genel-tarih-50-final";
+const ROOM_NAME = "farma-klinik-vaka-sim-01";
 
 const questions = [
-  // İSLAMİYET ÖNCESİ (12)
-  { q: "Türk adının anlamını Kaşgarlı Mahmut Divanü Lugati't-Türk adlı eserinde nasıl tanımlamıştır?", options: ["Türeyen / Çoğalan", "Olgunluk Çağı", "Güçlü / Kuvvetli", "Miğfer"], answer: 1 },
-  { q: "Orhun Abideleri aşağıdaki Türk devletlerinden hangisi döneminde dikilmiştir?", options: ["I. Göktürk Devleti", "Uygur Devleti", "II. Göktürk (Kutluk) Devleti", "Avar Kağanlığı"], answer: 2 },
-  { q: "Maniheizm dinini kabul ederek yerleşik hayata geçen ilk Türk devleti hangisidir?", options: ["Uygurlar", "Hazarlar", "Kırgızlar", "Göktürkler"], answer: 0 },
-  { q: "Avrupa Hun Devleti'nde Doğu Roma'yı Margus Antlaşması'na zorlayan hükümdar kimdir?", options: ["Balamir", "Uldız", "Rua", "Attila"], answer: 3 },
-  { q: "İslamiyet öncesi Türk devletlerinde hükümdarın erkek çocuklarına verilen unvan hangisidir?", options: ["Tigin", "Şad", "Ataman", "İnanç"], answer: 0 },
-  { q: "Musevilik dinini benimseyen tek Türk devleti hangisidir?", options: ["Peçenekler", "Hazarlar", "Karluklar", "Bulgarlar"], answer: 1 },
-  { q: "Dünyanın en uzun destanı kabul edilen ve Kırgızlara ait olan milli destan hangisidir?", options: ["Oğuz Kağan", "Ergenekon", "Manas", "Türeyiş"], answer: 2 },
-  { q: "Asya Hun Devleti'nde orduyu onluk teşkilata göre ilk kez düzenleyen hükümdar kimdir?", options: ["Teoman", "Mete Han", "Ki-ok", "Çi-çi"], answer: 1 },
-  { q: "İslamiyet öncesi Türk devletlerinde devlet işlerinin görüşülüp karara bağlandığı meclise ne ad verilir?", options: ["Kurultay (Toy)", "Ayukı", "Yargu", "Tudun"], answer: 0 },
-  { q: "Malazgirt Savaşı'nda Bizans saflarından Büyük Selçuklu tarafına geçen Türk topluluğu hangisidir?", options: ["Avarlar", "Hazarlar", "Peçenekler", "Kıpçaklar"], answer: 2 },
-  { q: "Eski Türklerde mezar taşı olarak dikilen ve öldürülen düşmanı simgeleyen taşlara ne ad verilir?", options: ["Kurgan", "Balbal", "Yuğ", "Uçmağ"], answer: 1 },
-  { q: "Türk tarihinde matbaayı ve hareketli harf sistemini ilk kez kullanan devlet hangisidir?", options: ["Uygurlar", "Hunlar", "Göktürkler", "Türgişler"], answer: 0 },
-
-  // İLK TÜRK-İSLAM DEVLETLERİ (7)
-  { q: "Orta Asya'da kurulan ilk Müslüman Türk devleti hangisidir?", options: ["Tolunoğulları", "Gazneliler", "Karahanlılar", "İhşidiler"], answer: 2 },
-  { q: "Sultan unvanını kullanan ilk Türk hükümdarı kimdir?", options: ["Gazneli Mahmut", "Tuğrul Bey", "Alparslan", "Satuk Buğra Han"], answer: 0 },
-  { q: "1071 yılında Anadolu'nun kapılarını Türklere açan zafer hangisidir?", options: ["Pasinler Savaşı", "Malazgirt Meydan Muharebesi", "Miryokefalon Savaşı", "Dandanakan Savaşı"], answer: 1 },
-  { q: "Divriği Ulu Camii ve Darüşşifası hangi ilk Türk beyliği döneminde inşa edilmiştir?", options: ["Mengücekliler", "Danişmentliler", "Saltuklular", "Artuklular"], answer: 0 },
-  { q: "Anadolu Selçuklularının tüccarlara düşük gümrük ve devlet sigortası uygulaması hangi alanı geliştirmeye yöneliktir?", options: ["Orduyu", "Tarımsal üretimi", "Uluslararası ticareti", "İlmiye sınıfını"], answer: 2 },
-  { q: "Anadolu'nun kesin olarak Türk yurdu olduğunu tescilleyen II. Kılıçarslan dönemi zaferi hangisidir?", options: ["Yassıçemen Savaşı", "Miryokefalon Savaşı", "Kösedağ Savaşı", "Malazgirt Savaşı"], answer: 1 },
-  { q: "1260 Ayn Calut Savaşı ile Moğolların ilerleyişini durduran Türk devleti hangisidir?", options: ["Memlükler", "Eyyubiler", "Tolunoğulları", "İhşidiler"], answer: 0 },
-
-  // OSMANLI SİYASİ (10)
-  { q: "Osmanlı Devleti'nin Bizans tekfurlarına karşı kazandığı ilk zafer kabul edilen savaş hangisidir?", options: ["Koyunhisar Savaşı", "Maltepe Savaşı", "Sırpsındığı Savaşı", "Çirmen Savaşı"], answer: 0 },
-  { q: "Osmanlı Devleti'nin Rumeli'deki ilk askeri üssü ve toprağı olan kale hangisidir?", options: ["Gelibolu Kalesi", "Çimpe Kalesi", "Kilitbahir Kalesi", "Seddülbahir Kalesi"], answer: 1 },
-  { q: "Yıldırım Bayezid'e 'Sultan-ı İklim-i Rum' unvanının verildiği zafer hangisidir?", options: ["I. Kosova", "Varna", "Niğbolu Savaşı", "II. Kosova"], answer: 2 },
-  { q: "1402 Ankara Savaşı sonrasında yaşanan 11 yıllık taht kavgaları dönemine ne denir?", options: ["Fetret Devri", "Lale Devri", "Tanzimat Devri", "İkinci Meşrutiyet"], answer: 0 },
-  { q: "Akdeniz'in Türk gölü haline gelmesini sağlayan Preveze Deniz Zaferi hangi kaptan-ı derya döneminde kazanılmıştır?", options: ["Piri Reis", "Barbaros Hayrettin Paşa", "Turgut Reis", "Kılıç Ali Paşa"], answer: 1 },
-  { q: "Osmanlı Devleti'nin Doğu'da en geniş sınırlara ulaştığı antlaşma hangisidir?", options: ["Kasr-ı Şirin Antlaşması", "Amasya Antlaşması", "Nasuh Paşa Antlaşması", "Ferhat Paşa Antlaşması"], answer: 3 },
-  { q: "Avusturya kralının Osmanlı sadrazamına eşit sayılma üstünlüğünü sona erdiren antlaşma hangisidir?", options: ["Zitvatorok Antlaşması", "İstanbul Antlaşması", "Vasvar Antlaşması", "Karlofça Antlaşması"], answer: 0 },
-  { q: "Osmanlı Devleti'nin Batı'da ilk kez büyük çapta toprak kaybettiği antlaşma hangisidir?", options: ["Pasarofça Antlaşması", "Belgrad Antlaşması", "Karlofça Antlaşması", "Küçük Kaynarca Antlaşması"], answer: 2 },
-  { q: "Osmanlı Devleti'nde Lale Devri'ni başlatan 1718 tarihli antlaşma hangisidir?", options: ["Pasarofça Antlaşması", "Prut Antlaşması", "Yaş Antlaşması", "Edirne Antlaşması"], answer: 0 },
-  { q: "Yunanistan'ın Osmanlı'dan ayrılarak resmen bağımsız olduğu antlaşma hangisidir?", options: ["Bükreş Antlaşması", "Edirne Antlaşması", "Hünkar İskelesi Antlaşması", "Berlin Antlaşması"], answer: 1 },
-
-  // OSMANLI KÜLTÜR-MEDENİYET (8)
-  { q: "Sadrazam sefere çıktığında başkentte yerine vekalet eden divan üyesi kimdir?", options: ["Kazasker", "Nişancı", "Sadaret Kaymakamı", "Kaptan-ı Derya"], answer: 2 },
-  { q: "Tımarlı Sipahilerin beslemek zorunda olduğu atlı askerlere ne ad verilir?", options: ["Cebelü", "Ulufe", "Humbaracı", "Lağımcı"], answer: 0 },
-  { q: "Gelirleri padişahın annesi, eşleri ve kızlarına ayrılan dirlik arazisi hangisidir?", options: ["Mukataa", "Paşmaklık", "Yurtluk", "Malikane"], answer: 1 },
-  { q: "Mimar Sinan'ın 'ustalık eserim' dediği Edirne'deki şaheser hangisidir?", options: ["Süleymaniye Camii", "Şehzade Camii", "Selimiye Camii", "Rüstem Paşa Camii"], answer: 2 },
-  { q: "Osmanlı çarşılarında satış fiyatlarının devlet tarafından sınırlandırılmasına ne denir?", options: ["Narh Sistemi", "İltizam", "Gedik", "Müsadere"], answer: 0 },
-  { q: "İbrahim Müteferrika tarafından Osmanlı matbaasında basılan ilk kitap hangisidir?", options: ["Cihannüma", "Vankulu Lügati", "Tuhfetü'l-Kibar", "Tarih-i Naima"], answer: 1 },
-  { q: "Osmanlı'da haksız kazanç sağlayan devlet görevlilerinin mallarına el koyma usulü hangisidir?", options: ["Müsadere", "Gedik", "İstimalet", "İskan"], answer: 0 },
-  { q: "Osmanlı minyatür sanatçılarına verilen unvan aşağıdakilerden hangisidir?", options: ["Hattat", "Müzehhib", "Nakkaş", "Hakkak"], answer: 2 },
-
-  // MİLLİ MÜCADELE (8)
-  { q: "İşgallerin mitinglerle protesto edilmesini isteyen ilk belge hangisidir?", options: ["Amasya Genelgesi", "Havza Genelgesi", "Sivas Kongresi", "Misak-ı Milli"], answer: 1 },
-  { q: "Milli Mücadele'nin amaç, gerekçe ve yöntemi ilk kez nerede belirtilmiştir?", options: ["Amasya Genelgesi", "Erzurum Kongresi", "Sivas Kongresi", "Havza Genelgesi"], answer: 0 },
-  { q: "Milli cemiyetlerin tek çatı altında birleştirildiği kongre hangisidir?", options: ["Erzurum Kongresi", "Balıkesir Kongresi", "Sivas Kongresi", "Pozantı Kongresi"], answer: 2 },
-  { q: "Temsil Heyeti'nin Ali Fuat Paşa'yı Batı Cephesi Komutanlığı'na ataması hangi gücü kullandığını kanıtlar?", options: ["Yasama", "Yürütme", "Yargı", "Diplomatik"], answer: 1 },
-  { q: "İstanbul Hükümeti'nin Temsil Heyeti'ni hukuken ilk kez tanıdığı görüşme hangisidir?", options: ["Bilecik Görüşmeleri", "Amasya Görüşmeleri", "Mudanya Mütarekesi", "Londra Konferansı"], answer: 1 },
-  { q: "Sevr Antlaşması'nı kabul ettirmek amacıyla Yunanlıların başlattığı taarruzla cereyan eden ilk savaş hangisidir?", options: ["I. İnönü Savaşı", "Sakarya Savaşı", "Büyük Taarruz", "Kütahya-Eskişehir"], answer: 0 },
-  { q: "TBMM'yi resmen tanıyan ilk Müslüman devlet hangisidir?", options: ["İran", "Mısır", "Afganistan", "Pakistan"], answer: 2 },
-  { q: "'Siz orada yalnız düşmanı değil, milletin makus talihini de yendiniz' telgrafı hangi zaferden sonra çekilmiştir?", options: ["I. İnönü", "II. İnönü Muharebesi", "Sakarya", "Dumlupınar"], answer: 1 },
-
-  // İNKILAP TARİHİ (5)
-  { q: "Yeni Türkiye'nin ekonomi rotasını çizen ve Misak-ı İktisadi'nin kabul edildiği toplantı hangisidir?", options: ["İzmir İktisat Kongresi", "Londra Konferansı", "Sivas Kongresi", "Heyet-i Temsiliye"], answer: 0 },
-  { q: "1926 Medeni Kanun ile kadınlara TANINMAYAN hak hangisidir?", options: ["Miras eşitliği", "Tanıklık eşitliği", "Boşanma hakkı", "Milletvekili seçme/seçilme"], answer: 3 },
-  { q: "Saltanatın kaldırılması hangi temel Atatürk ilkesiyle doğrudan ilgilidir?", options: ["Cumhuriyetçilik", "Devletçilik", "İnkılapçılık", "Halkçılık"], answer: 0 },
-  { q: "Türkiye'nin batı sınırını güvenceye almak için 1934'te imzaladığı pakt hangisidir?", options: ["Sadabat Paktı", "Balkan Antantı", "Akdeniz Paktı", "Bağdat Paktı"], answer: 1 },
-  { q: "Türkiye'nin doğu sınırlarının güvenliği için 1937'de İran, Irak ve Afganistan ile imzaladığı pakt hangisidir?", options: ["Balkan Paktı", "Sadabat Paktı", "CENTO", "Varşova Paktı"], answer: 1 }
+  { 
+    q: "65 yaşında kalp yetmezliği (NYHA Sınıf 3) olan Tip 2 diyabet hastasında aşağıdaki DPP-4 inhibitörlerinden hangisi KESİNLİKLE kontrendikedir?", 
+    options: ["Linagliptin", "Saksagliptin", "Sitagliptin", "Vildagliptin"], 
+    answer: 1, 
+    tag: "Diyabet",
+    explanation: "Şifre: A-S (Alogliptin ve Saksagliptin kalbi asar). Bu iki gliptin kalp yetmezliği semptomlarını kötüleştirdiği için kalp yetmezliğinde kontrendikedir."
+  },
+  { 
+    q: "eGFR değeri 28 mL/dk (İleri Evre KBY) olan bir hastada renal doz ayarı gerektirmeksizin güvenle başlanabilecek tek DPP-4 inhibitörü hangisidir?", 
+    options: ["Vildagliptin", "Alogliptin", "Sitagliptin", "Linagliptin"], 
+    answer: 3, 
+    tag: "Diyabet",
+    explanation: "Şifre: Lina = Güvenli Liman. Linagliptin karaciğer/safra yoluyla atılır. Böbrekten atılmayan ve böbrek yetmezliğinde doz ayarı gerektirmeyen tek gliptindir."
+  },
+  { 
+    q: "Hipertansiyon ve osteoporozu olan bir hastada, idrarda kalsiyum atılımını azaltarak (hipokalsiüri) kemik erimesine karşı ikili yarar sağlayan diüretik grubu hangisidir?", 
+    options: ["Loop (Kıvrım) Diüretikleri", "Tiazid Diüretikleri", "Potasyum Tutucu Diüretikler", "Ozmotik Diüretikler"], 
+    answer: 1, 
+    tag: "Hipertansiyon",
+    explanation: "Zıtlık Kuralı: Tiazidler kalsiyumu TUTAR (kanda artırır, idrarda azaltır), Loop diüretikleri ise ATAR (hipokalsemi yapar). Osteoporozda Tiazid ilk tercihtir."
+  },
+  { 
+    q: "Furosemid (Loop diüretiği) kullanan bir hastada şiddetli kulak çınlaması (ototoksisite) başlamıştır. Hastanın reçetesindeki hangi ilaç bu yan etkiyi tetiklemiş olabilir?", 
+    options: ["Aspirin", "Parasetamol", "Metformin", "Klopidogrel"], 
+    answer: 0, 
+    tag: "Diüretikler",
+    explanation: "Şifre: CALM EAR. Cisplatin, Aminoglikozit, Loop diüretikleri, Malarya ilacı, Eritromisin, Aspirin ve Red Man (Vankomisin) ototoksiktir. Furosemid + Aspirin kulak çınlaması yapar."
+  },
+  { 
+    q: "Morbid obezitesi olan Tip 2 diyabet hastasında kilo vermesi hedeflenmektedir. Bu hastada kilo artışına sebep olacağı için BAŞLANMAMASI gereken ilaç grubu hangisidir?", 
+    options: ["SGLT2 İnhibitörleri", "GLP-1 Agonistleri", "Sülfonilüreler", "Biguanidler"], 
+    answer: 2, 
+    tag: "Diyabet",
+    explanation: "Şifre: SİMİT. Sülfonilüre, Meglitinid ve Tiazolidindion grupları kilo aldırır. Bu hastada kilo verdiren GLP-1 agonisti veya Metformin tercih edilmelidir."
+  }
 ];
+
+// Şıkları karıştırma ve doğru cevabın yeni indeksini bulma
+questions.forEach(qObj => {
+  const correctText = qObj.options[qObj.answer];
+  for (let i = qObj.options.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [qObj.options[i], qObj.options[j]] = [qObj.options[j], qObj.options[i]];
+  }
+  qObj.answer = qObj.options.indexOf(correctText);
+});
 
 let peer = null;
 let isHost = false;
@@ -151,7 +147,7 @@ let hostConn = null;
 let players = [];
 let currentQ = -1;
 let timer = null;
-let timeLeft = 20;
+let timeLeft = 30; // Vaka okuma süresi 30 saniye
 
 function enterGame() {
   myName = document.getElementById('my-name').value.trim();
@@ -165,7 +161,7 @@ function enterGame() {
   peer.on('open', (id) => {
     isHost = true;
     myPeerId = id;
-    players.push({ id: myPeerId, name: myName, score: 0, answer: null, answerTime: 0 });
+    players.push({ id: myPeerId, name: myName, score: 0, correctCount: 0, streak: 0, answer: null, wasCorrect: false });
     document.getElementById('host-actions').style.display = 'block';
     document.getElementById('wait-msg').style.display = 'none';
     renderLobby();
@@ -202,14 +198,13 @@ function joinAsClient() {
 
 function handleHostData(conn, data) {
   if (data.type === 'JOIN') {
-    players.push({ conn, id: conn.peer, name: data.name, score: 0, answer: null, answerTime: 0 });
+    players.push({ conn, id: conn.peer, name: data.name, score: 0, correctCount: 0, streak: 0, answer: null, wasCorrect: false });
     renderLobby();
     broadcast({ type: 'LOBBY_UPDATE', players: players.map(p => ({ name: p.name, score: p.score })) });
   } else if (data.type === 'SUBMIT_ANSWER') {
     const p = players.find(x => x.id === conn.peer);
     if (p && p.answer === null) {
       p.answer = data.choice;
-      p.answerTime = data.timeRemaining;
       checkAllAnswered();
     }
   }
@@ -240,7 +235,7 @@ function nextQuestion() {
     return;
   }
 
-  players.forEach(p => { p.answer = null; p.answerTime = 0; });
+  players.forEach(p => { p.answer = null; p.wasCorrect = false; });
 
   const q = questions[currentQ];
   const qData = {
@@ -248,7 +243,9 @@ function nextQuestion() {
     index: currentQ,
     total: questions.length,
     q: q.q,
-    options: q.options
+    options: q.options,
+    tag: q.tag,
+    explanation: q.explanation
   };
 
   broadcast(qData);
@@ -258,7 +255,7 @@ function nextQuestion() {
 
 function startTimer() {
   clearInterval(timer);
-  timeLeft = 20;
+  timeLeft = 30;
   timer = setInterval(() => {
     timeLeft--;
     broadcast({ type: 'TICK', timeLeft });
@@ -284,7 +281,17 @@ function evaluateRound() {
 
   players.forEach(p => {
     if (p.answer === correctIdx) {
-      p.score += (500 + (p.answerTime * 25));
+      p.wasCorrect = true;
+      p.correctCount += 1;
+      p.streak += 1;
+
+      let gained = 100;
+      if (p.streak >= 3) gained += 25;
+
+      p.score += gained;
+    } else {
+      p.wasCorrect = false;
+      p.streak = 0;
     }
   });
 
@@ -293,22 +300,30 @@ function evaluateRound() {
   const resultData = {
     type: 'ROUND_OVER',
     correctAnswer: questions[currentQ].options[correctIdx],
-    leaderboard: players.map(p => ({ name: p.name, score: p.score })),
+    explanation: questions[currentQ].explanation,
+    leaderboard: players.map(p => ({ 
+      name: p.name, 
+      score: p.score, 
+      correctCount: p.correctCount,
+      streak: p.streak,
+      wasCorrect: p.wasCorrect 
+    })),
     isLast: currentQ + 1 >= questions.length
   };
 
   broadcast(resultData);
   handleClientData(resultData);
 
+  // 12 Saniye Bilgi Kartı Bekleme Süresi
   if (!resultData.isLast) {
     setTimeout(() => {
       nextQuestion();
-    }, 2000);
+    }, 12000);
   } else {
     setTimeout(() => {
       broadcast({ type: 'GAME_OVER' });
       handleClientData({ type: 'GAME_OVER' });
-    }, 2000);
+    }, 12000);
   }
 }
 
@@ -326,7 +341,14 @@ function handleClientData(data) {
     document.getElementById('round-card').style.display = 'none';
     document.getElementById('quiz-card').style.display = 'block';
 
-    document.getElementById('q-counter').innerText = `Soru ${data.index + 1}/${data.total}`;
+    document.getElementById('q-counter').innerText = `Vaka ${data.index + 1}/${data.total}`;
+    
+    const tagElem = document.getElementById('q-cat');
+    tagElem.innerText = data.tag;
+    if (data.tag === 'Diyabet') tagElem.className = 'cat-badge cat-diyabet';
+    else if (data.tag === 'Hipertansiyon') tagElem.className = 'cat-badge cat-hipertansiyon';
+    else tagElem.className = 'cat-badge cat-diuretik';
+
     document.getElementById('question-text').innerText = data.q;
     document.getElementById('status-footer').innerText = "Cevabınızı seçin...";
     document.getElementById('timer-bar').style.width = '100%';
@@ -342,24 +364,30 @@ function handleClientData(data) {
     });
   } else if (data.type === 'TICK') {
     document.getElementById('time-text').innerText = `${data.timeLeft}s`;
-    document.getElementById('timer-bar').style.width = `${(data.timeLeft / 20) * 100}%`;
+    document.getElementById('timer-bar').style.width = `${(data.timeLeft / 30) * 100}%`;
   } else if (data.type === 'ROUND_OVER') {
     document.getElementById('quiz-card').style.display = 'none';
     document.getElementById('round-card').style.display = 'block';
 
     document.getElementById('round-correct-ans').innerText = `Doğru Cevap: ${data.correctAnswer}`;
+    document.getElementById('flashcard-box').innerHTML = `<strong>💡 Hafıza Kartı:</strong> ${data.explanation}`;
+    
     const lb = document.getElementById('leaderboard');
-    lb.innerHTML = data.leaderboard.map((p, i) => `
-      <div class="leaderboard-row">
-        <span>#${i + 1} ${p.name}</span>
-        <span style="color:#38bdf8;">${p.score} Puan</span>
-      </div>
-    `).join('');
+    lb.innerHTML = data.leaderboard.map((p, i) => {
+      const statusIcon = p.wasCorrect ? (p.streak >= 2 ? `🔥x${p.streak}` : '✅') : '❌';
+      return `
+        <div class="leaderboard-row">
+          <span>#${i + 1} ${p.name} <span style="font-size: 18px; margin-left: 6px;">${statusIcon}</span></span>
+          <span style="color:#38bdf8;">${p.score} Puan <small style="color:#94a3b8; margin-left:8px;">(${p.correctCount} Doğru)</small></span>
+        </div>
+      `;
+    }).join('');
   } else if (data.type === 'GAME_OVER') {
     document.getElementById('quiz-card').style.display = 'none';
     document.getElementById('round-card').style.display = 'block';
-    document.getElementById('round-result-title').innerText = "🏆 50 Soru Tamamlandı! 🏆";
-    document.getElementById('round-correct-ans').innerText = "Yarışma sona erdi.";
+    document.getElementById('round-result-title').innerText = "🏆 Tüm Vakalar Tamamlandı! 🏆";
+    document.getElementById('round-correct-ans').innerText = "Simülasyon sona erdi.";
+    document.getElementById('flashcard-box').style.display = 'none';
   }
 }
 
@@ -369,12 +397,12 @@ function submitAnswer(idx, btnElem) {
 
   btnElem.classList.add('selected');
   document.querySelectorAll('.option-btn').forEach(b => b.disabled = true);
-  document.getElementById('status-footer').innerText = "Cevabınız kaydedildi! Diğerleri bekleniyor...";
+  document.getElementById('status-footer').innerText = "Cevabınız iletildi! Diğer eczacılar bekleniyor...";
 
-  const payload = { type: 'SUBMIT_ANSWER', choice: idx, timeRemaining: timeLeft };
+  const payload = { type: 'SUBMIT_ANSWER', choice: idx };
   if (isHost) {
     const me = players.find(p => p.id === myPeerId);
-    if (me) { me.answer = idx; me.answerTime = timeLeft; checkAllAnswered(); }
+    if (me) { me.answer = idx; checkAllAnswered(); }
   } else if (hostConn) {
     hostConn.send(payload);
   }
